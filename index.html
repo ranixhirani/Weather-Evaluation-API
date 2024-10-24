@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #weatherData {
+            margin-top: 20px;
+        }
+        .city-weather {
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather in Metro Cities</h1>
+    <button id="fetchWeatherBtn">Fetch Weather Data</button>
+    <div id="weatherData">
+        <!-- Weather data will be displayed here -->
+    </div>
+
+    <script>
+        document.getElementById('fetchWeatherBtn').addEventListener('click', () => {
+            fetch('/getWeather')  // Fetch weather data from the backend
+                .then(response => response.json())
+                .then(data => {
+                    const weatherDataDiv = document.getElementById('weatherData');
+                    weatherDataDiv.innerHTML = '';  // Clear previous data
+
+                    data.forEach(entry => {
+                        const cityWeatherDiv = document.createElement('div');
+                        cityWeatherDiv.classList.add('city-weather');
+                        cityWeatherDiv.innerHTML = `
+                            <h2>${entry.city} (Date: ${new Date(entry.date).toLocaleDateString()})</h2>
+                            <p><strong>Average Temperature:</strong> ${entry.data.averageTemperature}°C</p>
+                            <p><strong>Max Temperature:</strong> ${entry.data.maxTemperature}°C</p>
+                            <p><strong>Min Temperature:</strong> ${entry.data.minTemperature}°C</p>
+                            <p><strong>Dominant Weather Condition:</strong> ${entry.data.dominantCondition}</p>
+                        `;
+                        weatherDataDiv.appendChild(cityWeatherDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching weather data:', error);
+                    document.getElementById('weatherData').innerHTML = 'Error fetching weather data. Please try again later.';
+                });
+        });
+    </script>
+</body>
+</html>
